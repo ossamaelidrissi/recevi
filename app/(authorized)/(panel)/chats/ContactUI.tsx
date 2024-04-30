@@ -1,0 +1,30 @@
+import Link from "next/link";
+import { Contact } from "@/types/contact";
+import BlankUser from "./BlankUser";
+import { UPDATE_CURRENT_CONTACT, useCurrentContactDispatch } from "./CurrentContactContext";
+import { usePathname, useSearchParams } from 'next/navigation'
+
+
+export default function ContactUI(props: { contact: Contact , tag : any }) {
+    const { contact , tag } = props;
+    const setCurrentContact = useCurrentContactDispatch()
+    
+    const searchParams = useSearchParams();
+
+    const search = searchParams?.get("filter");
+    
+    return (
+        <Link href={ search ? `/chats/${contact.wa_id}?filter=${search}` : `/chats/${contact.wa_id}`} onClick={() => { setCurrentContact && setCurrentContact({ type: UPDATE_CURRENT_CONTACT, waId: contact.wa_id }) }}>
+            <div className="flex flex-row p-2 hover:bg-background-default-hover gap-4 cursor-pointer">
+                <div>
+                    <BlankUser className="w-12 h-12" />
+                </div>
+                <div className="flex flex-col items-start">
+                    <span>{contact.wa_id} ({contact.profile_name})</span>
+                    <span className= {`text-xs py-1 px-2 text-white rounded bg-opacity-5 `} style={{background: tag?.color}} >{tag?.name}</span>
+                    {/* TODO: Add some indication that this row is selected based on condition - contact.is_current */}
+                </div>
+            </div>
+        </Link>
+    )
+}
